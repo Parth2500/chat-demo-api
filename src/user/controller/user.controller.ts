@@ -8,12 +8,15 @@ import {
   Delete,
   Inject,
   Query,
+  UseGuards,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
-import { Observable, switchMap } from 'rxjs';
+import { map, Observable, switchMap } from 'rxjs';
+import { JwtGuard } from 'src/authentication/guards/jwt.guard';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
+import { LoginResponse } from '../entities/login-response.interface';
 import { IUser } from '../entities/user.interface';
 import {
   IUserHelperService,
@@ -40,6 +43,7 @@ export class UserController {
       .pipe(switchMap((user: IUser) => this.userService.create(user)));
   }
 
+  @UseGuards(JwtGuard)
   @Get()
   findAll(
     @Query('page') page = 1,
@@ -69,10 +73,19 @@ export class UserController {
   }
 
   @Post('login')
-  login(@Body() loginUserDto: LoginUserDto): Observable<boolean> {
+  login(@Body() loginUserDto: LoginUserDto): Observable<LoginResponse> {
     return this.userHelperService.loginUserDtoToEntity(loginUserDto).pipe(
       switchMap((user: IUser) => {
-        return this.userService.login(user);
+        return this.userService.login(user).pipe(
+          map((jwt: string) => {
+            const response: LoginResponse = {
+              access_token: jwt,
+              type: 'JWT',
+              expires_in: 36000,
+            };
+            return response;
+          }),
+        );
       }),
     );
   }

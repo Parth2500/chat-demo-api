@@ -11,7 +11,7 @@ export interface IUserService {
   findByUserName(username: string): Observable<IUser>;
   update;
   remove;
-  login(loginUser: IUser): Observable<boolean>;
+  login(loginUser: IUser): Observable<string>;
 }
 
 export const UserServiceToken = 'UserService';

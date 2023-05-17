@@ -6,9 +6,10 @@ import { UserService } from './services/user.service';
 import { UserHelperService } from './services/user-helper/user-helper.service';
 import { UserHelperServiceToken } from './services/iservices/user-helper.service.interface';
 import { UserServiceToken } from './services/iservices/user.service.interface';
+import { AuthenticationModule } from 'src/authentication/authentication.module';
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User])],
+  imports: [TypeOrmModule.forFeature([User]), AuthenticationModule],
   controllers: [UserController],
   providers: [
     { provide: UserServiceToken, useClass: UserService },

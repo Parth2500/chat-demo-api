@@ -1,22 +1,32 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { catchError, from, map, mapTo, Observable, of, switchMap } from 'rxjs';
+import { catchError, from, map, Observable, switchMap } from 'rxjs';
 import { Repository } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { IUser } from '../entities/user.interface';
 import { IUserService } from './iservices/user.service.interface';
-import * as bcrypt from 'bcryptjs';
 import {
   IPaginationOptions,
   paginate,
   Pagination,
 } from 'nestjs-typeorm-paginate';
+import {
+  IPasswordService,
+  PasswordToken,
+} from 'src/authentication/services/iservices/password.service.interface';
+import {
+  AuthenticationToken,
+  IAuthenticationService,
+} from 'src/authentication/services/iservices/authentication.service.interface';
 
 @Injectable()
 export class UserService implements IUserService {
   constructor(
     @InjectRepository(User)
     private readonly userRepository: Repository<User>,
+    @Inject(AuthenticationToken)
+    private readonly authService: IAuthenticationService,
+    @Inject(PasswordToken) private readonly passwordService: IPasswordService,
   ) {}
 
   //#region create
@@ -24,7 +34,7 @@ export class UserService implements IUserService {
     return this.isMailExists(createUser.email).pipe(
       switchMap((exists: boolean) => {
         if (!exists) {
-          return this.hashPassword(createUser.password).pipe(
+          return this.passwordService.hashPassword(createUser.password).pipe(
             switchMap((hashedPassword: string) => {
               createUser.password = hashedPassword;
               return from(this.userRepository.save(createUser)).pipe(
@@ -134,38 +144,31 @@ export class UserService implements IUserService {
     ).pipe(map((user: IUser) => (user ? true : false)));
   }
 
-  private hashPassword(password: string): Observable<string> {
-    return from(bcrypt.hash(password, 12));
-  }
-
-  private validatePassword(
-    password: string,
-    storedPassword: string,
-  ): Observable<boolean> {
-    return from(bcrypt.compare(password, storedPassword));
-  }
   //#endregion
 
   //#region  login
-  login(loginUser: IUser): Observable<boolean> {
+  login(loginUser: IUser): Observable<string> {
     return this.findByEmailForLogin(loginUser.email).pipe(
       switchMap((foundUser: IUser) => {
         if (foundUser) {
-          return this.validatePassword(
-            loginUser.password,
-            foundUser.password,
-          ).pipe(
-            switchMap((match: boolean) => {
-              if (match) {
-                return this.findById(foundUser.Id).pipe(map(() => true));
-              } else {
-                throw new HttpException(
-                  'Login was not successful, wrong credentials!',
-                  HttpStatus.UNAUTHORIZED,
-                );
-              }
-            }),
-          );
+          return this.passwordService
+            .validatePassword(loginUser.password, foundUser.password)
+            .pipe(
+              switchMap((match: boolean) => {
+                if (match) {
+                  return this.findById(foundUser.Id).pipe(
+                    switchMap((payload: IUser) =>
+                      this.authService.generateJwt(payload),
+                    ),
+                  );
+                } else {
+                  throw new HttpException(
+                    'Login was not successful, wrong credentials!',
+                    HttpStatus.UNAUTHORIZED,
+                  );
+                }
+              }),
+            );
         } else {
           throw new HttpException('No User Found!', HttpStatus.NOT_FOUND);
         }
