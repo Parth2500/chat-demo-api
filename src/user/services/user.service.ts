@@ -72,6 +72,14 @@ export class UserService implements IUserService {
     );
   }
 
+  public findByIdPromise(id: number): Promise<IUser> {
+    return this.userRepository.findOne({
+      where: {
+        Id: id,
+      },
+    });
+  }
+
   findByEmail(email: string): Observable<IUser> {
     return from(
       this.userRepository.findOne({

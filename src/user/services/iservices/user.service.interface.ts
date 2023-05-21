@@ -6,6 +6,7 @@ export interface IUserService {
   create(createUser: IUser): Observable<IUser>;
   findAll(options: IPaginationOptions): Observable<Pagination<IUser>>;
   findById(id: number): Observable<IUser>;
+  findByIdPromise(id: number): Promise<IUser>;
   findByEmail(email: string): Observable<IUser>;
   findByEmailForLogin(email: string): Observable<IUser>;
   findByUserName(username: string): Observable<IUser>;

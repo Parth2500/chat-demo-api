@@ -11,4 +11,8 @@ export class AuthenticationService implements IAuthenticationService {
   generateJwt(user: IUser): Observable<string> {
     return from(this.jwtService.signAsync({ user }));
   }
+
+  validateJwt(jwt: string): Promise<any> {
+    return this.jwtService.verifyAsync(jwt);
+  }
 }
