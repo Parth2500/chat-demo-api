@@ -12,6 +12,7 @@ import { AppServiceToken } from './app.service.interface';
 import { UserModule } from './user/user.module';
 import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthMiddleWare } from './middleware/auth.middleware';
+import { ChatModule } from './chat/chat.module';
 
 @Module({
   imports: [
@@ -24,6 +25,7 @@ import { AuthMiddleWare } from './middleware/auth.middleware';
     }),
     UserModule,
     AuthenticationModule,
+    ChatModule,
   ],
   controllers: [AppController],
   providers: [
