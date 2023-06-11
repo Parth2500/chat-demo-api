@@ -18,19 +18,19 @@ import { LoginResponse } from '../entities/login-response.interface';
 import { IUser } from '../entities/user.interface';
 import {
   IUserHelperService,
-  UserHelperServiceToken,
+  UserHelperToken,
 } from '../services/iservices/user-helper.service.interface';
 import {
   IUserService,
-  UserServiceToken,
+  UserToken,
 } from '../services/iservices/user.service.interface';
 
 @Controller('users')
 export class UserController {
   constructor(
-    @Inject(UserServiceToken)
+    @Inject(UserToken)
     private readonly userService: IUserService,
-    @Inject(UserHelperServiceToken)
+    @Inject(UserHelperToken)
     private readonly userHelperService: IUserHelperService,
   ) {}
 
@@ -59,6 +59,16 @@ export class UserController {
     return this.userService.findById(+id);
   }
 
+  @Get('email/:email')
+  findByEmail(@Param('email') email: string) {
+    return this.userService.findByEmail(email);
+  }
+
+  @Get('username/:username')
+  findByUserName(@Param('username') username: string) {
+    return this.userService.findByUserName(username);
+  }
+
   @Patch(':id')
   update(@Param('id') id: string, @Body() updateUserDto: UpdateUserDto) {
     return this.userService.update(+id, updateUserDto);
@@ -66,7 +76,7 @@ export class UserController {
 
   @Delete(':id')
   remove(@Param('id') id: string) {
-    return this.userService.remove(+id);
+    return this.userService.removeById(+id);
   }
 
   @Post('login')

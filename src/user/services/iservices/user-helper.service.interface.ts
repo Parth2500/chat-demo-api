@@ -8,4 +8,4 @@ export interface IUserHelperService {
   loginUserDtoToEntity(loginUserDto: LoginUserDto): Observable<IUser>;
 }
 
-export const UserHelperServiceToken = 'UserHelperService';
+export const UserHelperToken = 'UserHelperService';

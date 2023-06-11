@@ -1,7 +1,7 @@
 import { HttpException, HttpStatus, Inject, Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { catchError, from, map, Observable, switchMap } from 'rxjs';
-import { Repository } from 'typeorm';
+import { catchError, from, map, Observable, of, switchMap } from 'rxjs';
+import { Repository, UpdateResult } from 'typeorm';
 import { User } from '../entities/user.entity';
 import { IUser } from '../entities/user.interface';
 import { IUserService } from './iservices/user.service.interface';
@@ -130,14 +130,34 @@ export class UserService implements IUserService {
   //#endregion
 
   //#region update
-  update(id: number, updateUser: IUser) {
-    return `This action updates a #${id} user`;
+  update(id: number, updateUser: IUser): Observable<IUser> {
+    return this.findById(id).pipe(
+      switchMap((foundUser: IUser) => {
+        if (foundUser) {
+          return from(
+            this.userRepository.update(foundUser.Id, updateUser),
+          ).pipe(switchMap(() => this.findById(foundUser.Id)));
+        } else {
+          throw new HttpException('No User Found!', HttpStatus.NOT_FOUND);
+        }
+      }),
+    );
   }
   //#endregion
 
   //#region delete
-  remove(id: number) {
-    return `This action removes a #${id} user`;
+  removeById(id: number): Observable<IUser> {
+    return this.findById(id).pipe(
+      switchMap((foundUser: IUser) => {
+        if (foundUser) {
+          return from(this.userRepository.delete(foundUser)).pipe(
+            switchMap(() => of(foundUser)),
+          );
+        } else {
+          throw new HttpException('No User Found!', HttpStatus.NOT_FOUND);
+        }
+      }),
+    );
   }
   //#endregion
 
