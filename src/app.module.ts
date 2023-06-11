@@ -14,6 +14,13 @@ import { AuthenticationModule } from './authentication/authentication.module';
 import { AuthMiddleWare } from './middleware/auth.middleware';
 import { ChatModule } from './chat/chat.module';
 
+const modules = [UserModule, AuthenticationModule, ChatModule];
+
+const providers = [
+  { provide: AppServiceToken, useClass: AppService },
+  AuthMiddleWare,
+];
+
 @Module({
   imports: [
     ConfigModule.forRoot({ isGlobal: true }),
@@ -23,15 +30,10 @@ import { ChatModule } from './chat/chat.module';
       autoLoadEntities: true,
       synchronize: true,
     }),
-    UserModule,
-    AuthenticationModule,
-    ChatModule,
+    ...modules,
   ],
   controllers: [AppController],
-  providers: [
-    { provide: AppServiceToken, useClass: AppService },
-    AuthMiddleWare,
-  ],
+  providers: [...providers],
 })
 export class AppModule implements NestModule {
   configure(consumer: MiddlewareConsumer) {

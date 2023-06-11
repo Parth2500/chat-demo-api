@@ -8,13 +8,15 @@ import { UserHelperServiceToken } from './services/iservices/user-helper.service
 import { UserServiceToken } from './services/iservices/user.service.interface';
 import { AuthenticationModule } from 'src/authentication/authentication.module';
 
+const modules = [AuthenticationModule];
+
 const providers = [
   { provide: UserServiceToken, useClass: UserService },
   { provide: UserHelperServiceToken, useClass: UserHelperService },
 ];
 
 @Module({
-  imports: [TypeOrmModule.forFeature([User]), AuthenticationModule],
+  imports: [TypeOrmModule.forFeature([User]), ...modules],
   controllers: [UserController],
   providers: [...providers],
   exports: [...providers],

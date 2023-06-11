@@ -8,11 +8,9 @@ import {
   Delete,
   Inject,
   Query,
-  UseGuards,
 } from '@nestjs/common';
 import { Pagination } from 'nestjs-typeorm-paginate';
 import { map, Observable, switchMap } from 'rxjs';
-import { JwtGuard } from 'src/authentication/guards/jwt.guard';
 import { CreateUserDto } from '../dto/create-user.dto';
 import { LoginUserDto } from '../dto/login-user.dto';
 import { UpdateUserDto } from '../dto/update-user.dto';
