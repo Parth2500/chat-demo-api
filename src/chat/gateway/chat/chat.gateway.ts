@@ -112,7 +112,7 @@ export class ChatGateway
   @SubscribeMessage('paginateRooms')
   async onPaginateRoom(socket: Socket, page: IPage) {
     const rooms = await this.roomService.getRoomsForUser(
-      socket.data.user.id,
+      socket.data.user.Id,
       this.handleIncomingPageRequest(page),
     );
     rooms.meta.currentPage = rooms.meta.currentPage - 1;
