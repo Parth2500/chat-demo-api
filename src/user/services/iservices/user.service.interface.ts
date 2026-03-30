@@ -10,9 +10,9 @@ export interface IUserService {
   findByEmail(email: string): Observable<IUser>;
   findByEmailForLogin(email: string): Observable<IUser>;
   findByUserName(username: string): Observable<IUser>;
-  update;
-  remove;
+  update(id: number, updateUser: IUser): Observable<IUser>;
+  removeById(id: number): Observable<IUser>;
   login(loginUser: IUser): Observable<string>;
 }
 
-export const UserServiceToken = 'UserService';
+export const UserToken = 'UserService';

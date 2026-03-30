@@ -4,15 +4,15 @@ import { User } from './entities/user.entity';
 import { UserController } from './controller/user.controller';
 import { UserService } from './services/user.service';
 import { UserHelperService } from './services/user-helper/user-helper.service';
-import { UserHelperServiceToken } from './services/iservices/user-helper.service.interface';
-import { UserServiceToken } from './services/iservices/user.service.interface';
+import { UserHelperToken } from './services/iservices/user-helper.service.interface';
+import { UserToken } from './services/iservices/user.service.interface';
 import { AuthenticationModule } from 'src/authentication/authentication.module';
 
 const modules = [AuthenticationModule];
 
 const providers = [
-  { provide: UserServiceToken, useClass: UserService },
-  { provide: UserHelperServiceToken, useClass: UserHelperService },
+  { provide: UserToken, useClass: UserService },
+  { provide: UserHelperToken, useClass: UserHelperService },
 ];
 
 @Module({

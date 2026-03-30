@@ -13,7 +13,7 @@ import {
 import { IUser } from 'src/user/entities/user.interface';
 import {
   IUserService,
-  UserServiceToken,
+  UserToken,
 } from 'src/user/services/iservices/user.service.interface';
 
 export interface RequestModel extends Request {
@@ -24,7 +24,7 @@ export interface RequestModel extends Request {
 export class AuthMiddleWare implements NestMiddleware {
   constructor(
     @Inject(AuthenticationToken) private authService: IAuthenticationService,
-    @Inject(UserServiceToken) private userService: IUserService,
+    @Inject(UserToken) private userService: IUserService,
   ) {}
 
   async use(req: RequestModel, res: Response, next: (error?: any) => void) {
